@@ -6,3 +6,40 @@
 //
 
 import Foundation
+import SwiftData
+
+@Model
+class Lesson {
+    var date: Date
+    var topic: String
+    var durationInMinutes: Int
+    
+    var grammarTopics: String?
+    var homework: String?
+    
+    @Attribute(.externalStorage) var notes: String?
+    
+    init(date: Date, topic: String, durationInMinutes: Int = 60, grammarTopics: String? = nil, homework: String? = nil, notes: String? = nil) {
+        self.date = date
+        self.topic = topic
+        self.durationInMinutes = durationInMinutes
+        self.grammarTopics = grammarTopics
+        self.homework = homework
+        self.notes = notes
+    }
+    
+}
+
+@Model
+class VocabularyWord {
+    
+    @Attribute(.unique) var word: String
+    var translation: String
+    
+    var lesson: Lesson?
+    
+    init(word: String, translation: String) {
+        self.word = word
+        self.translation = translation
+    }
+}
