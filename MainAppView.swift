@@ -10,7 +10,7 @@ import SwiftUI
 struct MainAppView: View {
     var body: some View {
         TabView {
-            Text("Here will be a list of lessons")
+            LessonsListView()
                 .tabItem {
                     Label("Lessons", systemImage: "book")
                 }

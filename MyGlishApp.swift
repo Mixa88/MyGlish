@@ -14,6 +14,6 @@ struct MyGlishApp: App {
         WindowGroup {
             MainAppView()
         }
-        .modelContainer(for: Lesson.self)
+        .modelContainer(for: [Lesson.self, VocabularyWord.self])
     }
 }
