@@ -25,16 +25,22 @@ struct LessonsListView: View {
                     )
                 } else {
                     List {
+                        
                         ForEach(lessons) { lesson in
-                            VStack(alignment: .leading) {
-                                Text(lesson.topic)
-                                    .font(.headline)
-                                Text(lesson.date.formatted(date: .long, time: .omitted))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                            NavigationLink(value: lesson) {
+                                VStack(alignment: .leading) {
+                                    Text(lesson.topic)
+                                        .font(.headline)
+                                    Text(lesson.date.formatted(date: .long, time: .omitted))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                         .onDelete(perform: deleteLesson)
+                    }
+                    .navigationDestination(for: Lesson.self) { lesson in
+                        DetailLessonView(lesson: lesson)
                     }
                 }
             }
@@ -62,6 +68,7 @@ struct LessonsListView: View {
         }
     }
 }
+
 
 #Preview {
     LessonsListView()
