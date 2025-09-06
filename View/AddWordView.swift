@@ -8,11 +8,41 @@
 import SwiftUI
 
 struct AddWordView: View {
+    
+    @State private var word = ""
+    @State private var translation = ""
+    
+    @Environment(\.dismiss) var dismiss
+    
+    var onAdd: (VocabularyWord) -> Void
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            Form {
+                TextField("New Word", text: $word)
+                TextField("Translation", text: $translation)
+            }
+            .navigationTitle("Add Word")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        let newWord = VocabularyWord(word: word, translation: translation)
+                        onAdd(newWord)
+                        dismiss()
+                    }
+                    .disabled(word.isEmpty || translation.isEmpty)
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    AddWordView()
+    AddWordView { word in
+        print("Preview: Added word '\(word.word)' with translation '\(word.translation)'")
+    }
 }

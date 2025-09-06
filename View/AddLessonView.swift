@@ -19,6 +19,9 @@ struct AddLessonView: View {
     @State private var homework: String = ""
     @State private var notes: String = ""
     
+    @State private var newWords: [VocabularyWord] = []
+    @State private var showingAddWord = false
+    
     var isFormValid: Bool {
         !topic.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -35,6 +38,22 @@ struct AddLessonView: View {
                     Stepper("Duration: \(durationInMinutes) min", value: $durationInMinutes, in: 15...180, step: 15)
                     TextField("Grammar Topics (optional)", text: $grammarTopics)
                     TextField("Homework (optional)", text: $homework)
+                }
+                
+                Section("New Vocabulary") {
+                    ForEach(newWords) { word in
+                        HStack {
+                            Text(word.word).bold()
+                            Text(" – ")
+                            Text(word.translation).foregroundStyle(.green)
+                            Spacer()
+                        }
+                    }
+                    .onDelete(perform: deleteWord)
+                    
+                    Button(action: { showingAddWord.toggle() }) {
+                        Label("Add Word", systemImage: "plus")
+                    }
                 }
                 
                 Section("Notes") {
@@ -55,6 +74,11 @@ struct AddLessonView: View {
                         .disabled(!isFormValid)
                 }
             }
+            .sheet(isPresented: $showingAddWord) {
+                    AddWordView { newWord in
+                    newWords.append(newWord)
+                }
+            }
         }
     }
     
@@ -69,10 +93,19 @@ struct AddLessonView: View {
                 notes: notes.isEmpty ? nil : notes
             )
     
-            modelContext.insert(newLesson)
-            
-            dismiss()
+        newLesson.vocabulary = newWords
+                
+                for word in newWords {
+                    word.lesson = newLesson
+                }
+
+                modelContext.insert(newLesson)
+                dismiss()
         }
+    
+    private func deleteWord(at offsets: IndexSet) {
+        newWords.remove(atOffsets: offsets)
+    }
 }
 
 #Preview {

@@ -19,6 +19,9 @@ class Lesson {
     
     @Attribute(.externalStorage) var notes: String?
     
+    @Relationship(deleteRule: .nullify, inverse: \VocabularyWord.lesson)
+        var vocabulary: [VocabularyWord] = []
+    
     init(date: Date, topic: String, durationInMinutes: Int = 60, grammarTopics: String? = nil, homework: String? = nil, notes: String? = nil) {
         self.date = date
         self.topic = topic

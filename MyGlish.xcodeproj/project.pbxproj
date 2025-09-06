@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		BA1494B22E6C485F009F6277 /* MyGlish.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MyGlish.xcodeproj; sourceTree = "<group>"; };
 		BAA971072E6A23020084B25C /* MyGlish.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MyGlish.xcodeproj; sourceTree = "<group>"; };
 		BABC93CC2E69C8D60088E317 /* MyGlish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyGlish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BABC93DC2E69CAB00088E317 /* MyGlish.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MyGlish.xcodeproj; sourceTree = "<group>"; };
@@ -31,6 +32,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA1494B42E6C485F009F6277 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BAA971092E6A23020084B25C /* Products */ = {
 			isa = PBXGroup;
 			name = Products;
@@ -110,6 +116,10 @@
 			productRefGroup = BABC93CD2E69C8D60088E317 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = BA1494B42E6C485F009F6277 /* Products */;
+					ProjectRef = BA1494B22E6C485F009F6277 /* MyGlish.xcodeproj */;
+				},
 				{
 					ProductGroup = BABC93DE2E69CAB00088E317 /* Products */;
 					ProjectRef = BABC93DC2E69CAB00088E317 /* MyGlish.xcodeproj */;
