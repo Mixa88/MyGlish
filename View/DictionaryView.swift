@@ -27,11 +27,11 @@ struct DictionaryView: View {
         NavigationStack {
             if groupedWords.isEmpty {
                 ContentUnavailableView(
-                    "Словарь пуст",
+                    "The dictionary is empty",
                     systemImage: "text.book.closed",
-                    description: Text("Добавьте слова к урокам, и они появятся здесь.")
+                    description: Text("Add words to your lessons and they will appear here.")
                 )
-                .navigationTitle("My Dictionary 📖") // Заголовок для пустого состояния
+                .navigationTitle("My Dictionary 📖")
             } else {
                 List {
                     ForEach(sortedDates, id: \.self) { date in
@@ -47,7 +47,7 @@ struct DictionaryView: View {
                         }
                     }
                 }
-                .navigationTitle("My Dictionary 📖") // Заголовок для списка
+                .navigationTitle("My Dictionary 📖")
             }
         }
     }
