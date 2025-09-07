@@ -15,7 +15,7 @@ struct MainAppView: View {
                     Label("Lessons", systemImage: "book")
                 }
             
-            Text("Here will be a list of words")
+            DictionaryView()
                 .tabItem {
                     Label("Words", systemImage: "square.and.arrow.up")
                 }
