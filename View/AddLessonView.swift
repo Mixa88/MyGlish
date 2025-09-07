@@ -22,6 +22,8 @@ struct AddLessonView: View {
     @State private var newWords: [VocabularyWord] = []
     @State private var showingAddWord = false
     
+    var lesson: Lesson?
+    
     var isFormValid: Bool {
         !topic.trimmingCharacters(in: .whitespaces).isEmpty
     }

@@ -10,12 +10,13 @@ import SwiftData
 
 struct DetailLessonView: View {
     
+    
+    @State private var isShowingEditView = false
+    
     @Bindable var lesson: Lesson
     
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
-    
-   
     
     var body: some View {
         ScrollView {
@@ -30,16 +31,14 @@ struct DetailLessonView: View {
                 }
                 .padding(.horizontal)
                 
-                
+                // MARK: - Cards Section
                 VStack(spacing: 15) {
-                    
                     cardView(
                         title: "Duration",
                         icon: "timer",
                         content: "\(lesson.durationInMinutes) min",
                         gradientColors: [.blue, .purple]
                     )
-                    
                     
                     if let grammar = lesson.grammarTopics, !grammar.isEmpty {
                         cardView(
@@ -50,7 +49,6 @@ struct DetailLessonView: View {
                         )
                     }
                     
-                    
                     if let homework = lesson.homework, !homework.isEmpty {
                         cardView(
                             title: "Homework",
@@ -59,7 +57,6 @@ struct DetailLessonView: View {
                             gradientColors: [.orange, .yellow]
                         )
                     }
-                    
                     
                     if let notes = lesson.notes, !notes.isEmpty {
                         cardView(
@@ -70,20 +67,28 @@ struct DetailLessonView: View {
                         )
                     }
                     
-                    
                     if !lesson.vocabulary.isEmpty {
                         vocabularyCardView()
                     }
                 }
                 .padding(.horizontal)
-                
             }
             .padding(.top)
         }
         .navigationTitle(lesson.topic)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
-       
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") {
+                    isShowingEditView.toggle()
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingEditView) {
+            
+            AddLessonView(lesson: lesson)
+        }
     }
     
     
@@ -103,7 +108,6 @@ struct DetailLessonView: View {
         .background(LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .topLeading, endPoint: .bottomTrailing))
         .clipShape(RoundedRectangle(cornerRadius: 15))
     }
-    
     
     @ViewBuilder
     private func vocabularyCardView() -> some View {
