@@ -10,14 +10,16 @@ import SwiftData
 
 struct DetailLessonView: View {
     
-    let lesson: Lesson
+    @Bindable var lesson: Lesson
     
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
+    // ... переменные и другие функции ...
+    
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 15) {
                 
                 // MARK: - General Info
                 VStack(alignment: .leading, spacing: 4) {
@@ -26,69 +28,108 @@ struct DetailLessonView: View {
                     Text(lesson.date.formatted(date: .long, time: .omitted))
                         .foregroundStyle(.secondary)
                 }
+                .padding(.horizontal)
                 
-                // MARK: - Stats Section
-                HStack {
-                    Image(systemName: "timer")
-                    Text("\(lesson.durationInMinutes) min")
-                    Spacer()
-                }
-                .font(.headline)
-                .padding()
-                .background(.thinMaterial, in: .rect(cornerRadius: 12))
-                
-                
-                // MARK: - Details Section
-                if let grammar = lesson.grammarTopics, !grammar.isEmpty {
-                    detailSection(title: "Grammar", content: grammar, icon: "text.book.closed")
-                }
-                
-                if let homework = lesson.homework, !homework.isEmpty {
-                    detailSection(title: "Homework", content: homework, icon: "pencil.and.ruler")
-                }
-                
-                if let notes = lesson.notes, !notes.isEmpty {
-                    detailSection(title: "Notes", content: notes, icon: "note.text")
-                }
-                
-                // MARK: - Vocabulary Section
-                if !lesson.vocabulary.isEmpty {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Vocabulary", systemImage: "text.bubble")
-                            .font(.title2.bold())
-                        
-                        
-                        ForEach(lesson.vocabulary.sorted { $0.word < $1.word }) { word in
-                            HStack {
-                                Text(word.word).bold()
-                                Text("–")
-                                Text(word.translation).foregroundStyle(.secondary)
-                            }
-                            .font(.callout)
-                            Divider()
-                        }
+                // MARK: - Cards Section
+                VStack(spacing: 15) {
+                    // Карточка с длительностью
+                    cardView(
+                        title: "Duration",
+                        icon: "timer",
+                        content: "\(lesson.durationInMinutes) min",
+                        gradientColors: [.blue, .purple]
+                    )
+                    
+                    // Карточка для грамматики
+                    if let grammar = lesson.grammarTopics, !grammar.isEmpty {
+                        cardView(
+                            title: "Grammar",
+                            icon: "text.book.closed",
+                            content: grammar,
+                            gradientColors: [.green, .teal]
+                        )
+                    }
+                    
+                    // Карточка для домашнего задания
+                    if let homework = lesson.homework, !homework.isEmpty {
+                        cardView(
+                            title: "Homework",
+                            icon: "pencil.and.ruler",
+                            content: homework,
+                            gradientColors: [.orange, .yellow]
+                        )
+                    }
+                    
+                    // Карточка для заметок
+                    if let notes = lesson.notes, !notes.isEmpty {
+                        cardView(
+                            title: "Notes",
+                            icon: "note.text",
+                            content: notes,
+                            gradientColors: [.gray, .secondary]
+                        )
+                    }
+                    
+                    // Карточка для словаря
+                    if !lesson.vocabulary.isEmpty {
+                        vocabularyCardView()
                     }
                 }
+                .padding(.horizontal)
                 
             }
-            .padding()
+            .padding(.top)
         }
         .navigationTitle(lesson.topic)
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemGroupedBackground))
+        // ... toolbar и sheet для редактирования ...
     }
     
-    
+    // Универсальная функция для создания карточек
     @ViewBuilder
-    private func detailSection(title: String, content: String, icon: String) -> some View {
+    private func cardView(title: String, icon: String, content: String, gradientColors: [Color]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Label(title, systemImage: icon)
-                .font(.title2.bold())
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white.opacity(0.8))
+            
             Text(content)
-                .padding(.leading, 35)
+                .font(.body)
+                .foregroundStyle(.white)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .topLeading, endPoint: .bottomTrailing))
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+    }
+    
+    // Отдельная функция для карточки словаря из-за сложного контента
+    @ViewBuilder
+    private func vocabularyCardView() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Vocabulary (\(lesson.vocabulary.count))", systemImage: "text.bubble")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white.opacity(0.8))
+            
+            Divider().overlay(Color.white.opacity(0.5))
+            
+            ForEach(lesson.vocabulary.sorted { $0.word < $1.word }) { word in
+                HStack {
+                    Text(word.word).bold()
+                    Text("–")
+                    Text(word.translation)
+                }
+                .font(.body)
+            }
+            .foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(LinearGradient(gradient: Gradient(colors: [.red, .pink]), startPoint: .topLeading, endPoint: .bottomTrailing))
+        .clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }
-
 
 
 #Preview {
