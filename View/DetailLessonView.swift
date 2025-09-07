@@ -15,7 +15,7 @@ struct DetailLessonView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    // ... переменные и другие функции ...
+   
     
     var body: some View {
         ScrollView {
@@ -30,9 +30,9 @@ struct DetailLessonView: View {
                 }
                 .padding(.horizontal)
                 
-                // MARK: - Cards Section
+                
                 VStack(spacing: 15) {
-                    // Карточка с длительностью
+                    
                     cardView(
                         title: "Duration",
                         icon: "timer",
@@ -40,7 +40,7 @@ struct DetailLessonView: View {
                         gradientColors: [.blue, .purple]
                     )
                     
-                    // Карточка для грамматики
+                    
                     if let grammar = lesson.grammarTopics, !grammar.isEmpty {
                         cardView(
                             title: "Grammar",
@@ -50,7 +50,7 @@ struct DetailLessonView: View {
                         )
                     }
                     
-                    // Карточка для домашнего задания
+                    
                     if let homework = lesson.homework, !homework.isEmpty {
                         cardView(
                             title: "Homework",
@@ -60,7 +60,7 @@ struct DetailLessonView: View {
                         )
                     }
                     
-                    // Карточка для заметок
+                    
                     if let notes = lesson.notes, !notes.isEmpty {
                         cardView(
                             title: "Notes",
@@ -70,7 +70,7 @@ struct DetailLessonView: View {
                         )
                     }
                     
-                    // Карточка для словаря
+                    
                     if !lesson.vocabulary.isEmpty {
                         vocabularyCardView()
                     }
@@ -83,10 +83,10 @@ struct DetailLessonView: View {
         .navigationTitle(lesson.topic)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
-        // ... toolbar и sheet для редактирования ...
+       
     }
     
-    // Универсальная функция для создания карточек
+    
     @ViewBuilder
     private func cardView(title: String, icon: String, content: String, gradientColors: [Color]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -104,7 +104,7 @@ struct DetailLessonView: View {
         .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
-    // Отдельная функция для карточки словаря из-за сложного контента
+    
     @ViewBuilder
     private func vocabularyCardView() -> some View {
         VStack(alignment: .leading, spacing: 10) {
