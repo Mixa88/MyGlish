@@ -19,6 +19,11 @@ struct MainAppView: View {
                 .tabItem {
                     Label("Words", systemImage: "square.and.arrow.up")
                 }
+            
+            FlashcardView()
+                .tabItem {
+                    Label("Trainer", systemImage: "rectangle.stack.fill")
+                }
         }
     }
 }
