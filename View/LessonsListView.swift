@@ -40,17 +40,16 @@ struct LessonsListView: View {
                     List {
                         ForEach(filteredLessons) { lesson in
                             NavigationLink(value: lesson) {
-    
                                 LessonRowView(lesson: lesson)
                             }
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowBackground(
                                 RoundedRectangle(cornerRadius: 15)
-                                    .fill(.background) // Используем фоновый цвет системы
+                                    .fill(.background)
                                     .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
                                     .padding(.vertical, 4)
                             )
-                            .listRowSeparator(.hidden) // Скрываем стандартный разделитель
+                            .listRowSeparator(.hidden)
                         }
                         .onDelete(perform: deleteLesson)
                     }
@@ -83,26 +82,24 @@ struct LessonsListView: View {
             if let index = lessons.firstIndex(of: filteredLessons[offset]) {
                 let lessonToDelete = lessons[index]
                 modelContext.delete(lessonToDelete)
+
+                // Явное сохранение для надежности
+                try? modelContext.save()
             }
         }
     }
 }
 
-
-// MARK: - Preview
 #Preview {
     let container: ModelContainer = {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: Lesson.self, VocabularyWord.self, configurations: config)
-        
         let lesson = Lesson(date: .now, topic: "Preview Lesson")
-        let word1 = VocabularyWord(word: "Preview", translation: "Превью")
+        let word1 = VocabularyWord(word: "Preview", translation: "Превью", dateAdded: Date.now)
         lesson.vocabulary = [word1]
-        
         container.mainContext.insert(lesson)
         container.mainContext.insert(word1)
         word1.lesson = lesson
-
         return container
     }()
     

@@ -17,7 +17,7 @@ struct MainAppView: View {
             
             DictionaryView()
                 .tabItem {
-                    Label("Words", systemImage: "square.and.arrow.up")
+                    Label("Words", systemImage: "text.book.closed.fill")
                 }
             
             FlashcardView()

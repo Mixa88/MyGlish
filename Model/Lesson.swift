@@ -38,11 +38,13 @@ class VocabularyWord {
     
     @Attribute(.unique) var word: String
     var translation: String
+    var dateAdded: Date
     
     var lesson: Lesson?
     
-    init(word: String, translation: String) {
+    init(word: String, translation: String, dateAdded: Date) {
         self.word = word
         self.translation = translation
+        self.dateAdded = dateAdded
     }
 }

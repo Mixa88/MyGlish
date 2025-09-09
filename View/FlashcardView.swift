@@ -9,15 +9,15 @@ import SwiftUI
 import SwiftData
 
 struct FlashcardView: View {
-    // 1. Запрашиваем все слова из базы
+    
     @Query var allWords: [VocabularyWord]
     
-    // 2. State для управления тренажером
+    
     @State private var wordsToReview: [VocabularyWord] = []
     @State private var currentIndex = 0
     @State private var isFlipped = false
     
-    // State для анимации
+    
     @State private var rotation: Double = 0
     
     var body: some View {
@@ -30,17 +30,17 @@ struct FlashcardView: View {
                         description: Text("Сначала добавьте слова к урокам.")
                     )
                 } else {
-                    // Прогресс бар (бонус)
+                    
                     ProgressView(value: Double(currentIndex), total: Double(wordsToReview.count))
                         .progressViewStyle(.linear)
                     
-                    // 3. Сама карточка
+                    
                     ZStack {
-                        // Используем два разных View для переда и зада, чтобы анимация была плавной
+                        
                         if !isFlipped {
-                            CardFace(text: currentWord.word) // Передняя сторона
+                            CardFace(text: currentWord.word)
                         } else {
-                            CardFace(text: currentWord.translation, isFront: false) // Задняя сторона
+                            CardFace(text: currentWord.translation, isFront: false)
                         }
                     }
                     .rotation3DEffect(.degrees(rotation), axis: (x: 0, y: 1, z: 0))
@@ -48,7 +48,7 @@ struct FlashcardView: View {
                         flipCard()
                     }
                     
-                    // 4. Кнопки управления
+                    
                     HStack(spacing: 20) {
                         Button("Shuffle Deck", systemImage: "shuffle", action: shuffleDeck)
                             .buttonStyle(.bordered)
@@ -60,7 +60,7 @@ struct FlashcardView: View {
             }
             .padding()
             .navigationTitle("Flashcards 🃏")
-            .onAppear(perform: shuffleDeck) // Перемешиваем колоду при первом появлении
+            .onAppear(perform: shuffleDeck)
         }
     }
     
@@ -68,7 +68,7 @@ struct FlashcardView: View {
     
     private var currentWord: VocabularyWord {
         
-        wordsToReview.indices.contains(currentIndex) ? wordsToReview[currentIndex] : VocabularyWord(word: "Done", translation: "Готово")
+        wordsToReview.indices.contains(currentIndex) ? wordsToReview[currentIndex] : VocabularyWord(word: "Done", translation: "Готово", dateAdded: Date.now)
     }
     
     private func flipCard() {
@@ -91,7 +91,7 @@ struct FlashcardView: View {
                 if currentIndex < wordsToReview.count - 1 {
                     currentIndex += 1
                 } else {
-                    // Если дошли до конца, можно перемешать заново
+                    
                     shuffleDeck()
                 }
             }
@@ -128,14 +128,14 @@ struct CardFace: View {
 
 // MARK: - Preview
 #Preview {
-    // Используем наш надежный способ для превью
+    
     let container: ModelContainer = {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: Lesson.self, VocabularyWord.self, configurations: config)
         
         let lesson = Lesson(date: .now, topic: "Preview Lesson")
-        let word1 = VocabularyWord(word: "Apple", translation: "Яблоко")
-        let word2 = VocabularyWord(word: "House", translation: "Дом")
+        let word1 = VocabularyWord(word: "Apple", translation: "Яблоко", dateAdded: Date.now)
+        let word2 = VocabularyWord(word: "House", translation: "Дом", dateAdded: Date.now)
         
         container.mainContext.insert(lesson)
         container.mainContext.insert(word1)

@@ -12,6 +12,7 @@ struct AddLessonView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
+    // MARK: - State Properties
     @State private var topic: String = ""
     @State private var date: Date = .now
     @State private var durationInMinutes: Int = 60
@@ -21,6 +22,7 @@ struct AddLessonView: View {
     
     @State private var newWords: [VocabularyWord] = []
     @State private var showingAddWord = false
+    
     
     var lesson: Lesson?
     
@@ -46,7 +48,7 @@ struct AddLessonView: View {
                     ForEach(newWords) { word in
                         HStack {
                             Text(word.word).bold()
-                            Text(" – ")
+                            Text("–")
                             Text(word.translation).foregroundStyle(.green)
                             Spacer()
                         }
@@ -63,28 +65,53 @@ struct AddLessonView: View {
                         .frame(height: 150)
                 }
             }
-            .navigationTitle("New Lesson")
+            .navigationTitle(lesson == nil ? "New Lesson" : "Edit Lesson")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                        }
-                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: saveLesson)
                         .disabled(!isFormValid)
                 }
             }
             .sheet(isPresented: $showingAddWord) {
-                    AddWordView { newWord in
+                
+                AddWordView(lessonDate: self.date) { newWord in
                     newWords.append(newWord)
                 }
             }
+            .onAppear(perform: setupForm)
+        }
+    }
+    
+    private func setupForm() {
+        if let lesson {
+            topic = lesson.topic
+            date = lesson.date
+            durationInMinutes = lesson.durationInMinutes
+            grammarTopics = lesson.grammarTopics ?? ""
+            homework = lesson.homework ?? ""
+            notes = lesson.notes ?? ""
+            newWords = lesson.vocabulary
         }
     }
     
     private func saveLesson() {
+        if let lesson {
+            
+            lesson.topic = topic
+            lesson.date = date
+            lesson.durationInMinutes = durationInMinutes
+            lesson.grammarTopics = grammarTopics.isEmpty ? nil : grammarTopics
+            lesson.homework = homework.isEmpty ? nil : homework
+            lesson.notes = notes.isEmpty ? nil : notes
+            lesson.vocabulary = newWords
+            for word in newWords {
+                word.lesson = lesson
+            }
+        } else {
             
             let newLesson = Lesson(
                 date: date,
@@ -94,22 +121,41 @@ struct AddLessonView: View {
                 homework: homework.isEmpty ? nil : homework,
                 notes: notes.isEmpty ? nil : notes
             )
-    
-        newLesson.vocabulary = newWords
-                
-                for word in newWords {
-                    word.lesson = newLesson
-                }
-
-                modelContext.insert(newLesson)
-                dismiss()
+            
+            newLesson.vocabulary = newWords
+            for word in newWords {
+                word.lesson = newLesson
+            }
+            modelContext.insert(newLesson)
         }
+        
+        
+        try? modelContext.save()
+        
+        dismiss()
+    }
     
     private func deleteWord(at offsets: IndexSet) {
         newWords.remove(atOffsets: offsets)
     }
 }
 
-#Preview {
+#Preview("Create Mode") {
     AddLessonView()
+}
+
+#Preview("Edit Mode") {
+    let container: ModelContainer = {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: Lesson.self, configurations: config)
+        let lesson = Lesson(date: .now, topic: "Existing Lesson")
+        return container
+    }()
+    
+    
+    let fetchDescriptor = FetchDescriptor<Lesson>()
+    let lesson = try! container.mainContext.fetch(fetchDescriptor).first!
+    
+    return AddLessonView(lesson: lesson)
+        .modelContainer(container)
 }

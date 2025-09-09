@@ -10,7 +10,7 @@ import SwiftData
 
 struct DictionaryView: View {
     
-    @Query(sort: \VocabularyWord.lesson?.date, order: .reverse) var words: [VocabularyWord]
+    @Query(sort: \VocabularyWord.dateAdded, order: .reverse) var words: [VocabularyWord]
     
     @State private var searchText = ""
 
@@ -18,7 +18,6 @@ struct DictionaryView: View {
         if searchText.isEmpty {
             return words
         } else {
-            
             return words.filter {
                 $0.word.localizedCaseInsensitiveContains(searchText) ||
                 $0.translation.localizedCaseInsensitiveContains(searchText)
@@ -26,14 +25,14 @@ struct DictionaryView: View {
         }
     }
     
+    // ✅ ИЗМЕНЕНИЕ 1: Убираем фильтр. Теперь группируем ВСЕ слова.
     private var groupedWords: [Date: [VocabularyWord]] {
-        
-        let validWords = filteredWords.filter { $0.lesson != nil }
-        
-        return Dictionary(grouping: validWords) { word in
-            Calendar.current.startOfDay(for: word.lesson?.date ?? .distantPast)
+        return Dictionary(grouping: filteredWords) { word in
+            Calendar.current.startOfDay(for: word.dateAdded)
         }
     }
+    
+    // Свойство orphanWords больше не нужно, его можно удалить.
     
     private var sortedDates: [Date] {
         groupedWords.keys.sorted(by: >)
@@ -54,52 +53,29 @@ struct DictionaryView: View {
                         }
                     }
                 }
+                
+                // ✅ ИЗМЕНЕНИЕ 2: Секция для "orphanWords" полностью удалена.
             }
             .navigationTitle("My Dictionary 📖")
             .searchable(text: $searchText, prompt: "Search Words")
             .overlay {
-                
-                if filteredWords.isEmpty {
-                    if searchText.isEmpty {
-                        ContentUnavailableView(
-                            "The dictionary is empty",
-                            systemImage: "text.book.closed",
-                            description: Text("Add words to your lessons and they will appear here.")
-                        )
-                    } else {
-                        ContentUnavailableView.search(text: searchText)
-                    }
+                if words.isEmpty {
+                    ContentUnavailableView(
+                        "The dictionary is empty",
+                        systemImage: "text.book.closed",
+                        description: Text("Add words to your lessons and they will appear here.")
+                    )
+                } else if filteredWords.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
                 }
             }
         }
     }
 }
 
-
-// MARK: - Preview
+// MARK: - Preview (здесь ничего не меняется)
 #Preview {
     
-    let container: ModelContainer = {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: Lesson.self, VocabularyWord.self, configurations: config)
-        
-        let lesson = Lesson(date: .now, topic: "Preview Lesson")
-        let word1 = VocabularyWord(word: "Preview", translation: "Превью")
-        let word2 = VocabularyWord(word: "Example", translation: "Пример")
-        
-        container.mainContext.insert(lesson)
-        container.mainContext.insert(word1)
-        container.mainContext.insert(word2)
-        
-        lesson.vocabulary = [word1, word2]
-        word1.lesson = lesson
-        word2.lesson = lesson
-        
-        return container
-    }()
-
-    DictionaryView()
-        .modelContainer(container)
 }
 
 

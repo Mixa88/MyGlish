@@ -136,29 +136,35 @@ struct DetailLessonView: View {
 }
 
 
+
 #Preview {
     
-    do {
-        
+    let exampleLesson = Lesson(date: .now, topic: "Present Perfect Tense", durationInMinutes: 60, grammarTopics: "Usage with 'for' and 'since'", homework: "Workbook p. 45, ex. 3-5", notes: "Focus on the difference between Present Perfect and Past Simple.")
+    
+    
+    let container: ModelContainer = {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: Lesson.self, configurations: config)
-
-        
-        let exampleLesson = Lesson(date: .now, topic: "Present Perfect Tense", durationInMinutes: 60, grammarTopics: "Usage with 'for' and 'since'", homework: "Workbook p. 45, ex. 3-5", notes: "Focus on the difference between Present Perfect and Past Simple. Good progress today.")
+        let container = try! ModelContainer(for: Lesson.self, VocabularyWord.self, configurations: config)
         
         
-        let word1 = VocabularyWord(word: "since", translation: "с тех пор как")
-        let word2 = VocabularyWord(word: "already", translation: "уже")
+        let word1 = VocabularyWord(word: "since", translation: "с тех пор как", dateAdded: .now)
+        let word2 = VocabularyWord(word: "already", translation: "уже", dateAdded: .now)
+        
+        
+        container.mainContext.insert(exampleLesson)
+        container.mainContext.insert(word1)
+        container.mainContext.insert(word2)
+        
         exampleLesson.vocabulary = [word1, word2]
         word1.lesson = exampleLesson
         word2.lesson = exampleLesson
         
-        
-        return NavigationStack {
-            DetailLessonView(lesson: exampleLesson)
-                .modelContainer(container)
-        }
-    } catch {
-        return Text("Failed to create preview: \(error.localizedDescription)")
+        return container
+    }()
+
+    
+    NavigationStack {
+        DetailLessonView(lesson: exampleLesson)
+            .modelContainer(container)
     }
 }

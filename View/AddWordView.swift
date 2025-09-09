@@ -5,17 +5,19 @@
 //  Created by Михайло Тихонов on 06.09.2025.
 //
 
+
 import SwiftUI
 
 struct AddWordView: View {
-    
     @State private var word = ""
     @State private var translation = ""
-    
     @Environment(\.dismiss) var dismiss
     
-    var onAdd: (VocabularyWord) -> Void
     
+    let lessonDate: Date
+    
+    var onAdd: (VocabularyWord) -> Void
+
     var body: some View {
         NavigationStack {
             Form {
@@ -27,10 +29,10 @@ struct AddWordView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
-                        let newWord = VocabularyWord(word: word, translation: translation)
+                        
+                        let newWord = VocabularyWord(word: word, translation: translation, dateAdded: lessonDate)
                         onAdd(newWord)
                         dismiss()
                     }
@@ -42,7 +44,7 @@ struct AddWordView: View {
 }
 
 #Preview {
-    AddWordView { word in
-        print("Preview: Added word '\(word.word)' with translation '\(word.translation)'")
+    AddWordView(lessonDate: .now) { word in
+        print("Added word: \(word.word)")
     }
 }
